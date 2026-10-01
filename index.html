@@ -312,9 +312,10 @@ figure{ position:relative; }
 .mascot-eye{ fill: var(--ink); }
 .mascot-mouth{ stroke: var(--ink); stroke-width:3; fill:none; }
 .mascot-cheek{ fill: var(--glow); opacity:.55; }
-.mascot-leaf{ fill: var(--olive); }
+.mascot-body{fill:var(--mascot-body,url(#mascotGrad));stroke:var(--mascot-stroke,none);stroke-width:var(--mascot-stroke-width,0);}
+.mascot-leaf{ fill: var(--mascot-leaf,var(--olive)); }
 .mascot-leaf-vein{ stroke: var(--olive-deep); stroke-width:1.4; fill:none; }
-.mascot-torn{ fill: var(--surface); }
+.mascot-torn{ fill: var(--mascot-torn,var(--surface)); }
 .mascot-arm{ stroke: var(--terracotta-deep); stroke-width:8; fill:none; }
 .mascot-hand{ fill: var(--terracotta-deep); }
 .mascot-shadow{ fill: rgba(var(--shadow-rgb),.2); }
@@ -901,6 +902,14 @@ a:focus-visible, button:focus-visible{
   position:absolute;inset:clamp(.7rem,2vw,1.25rem) clamp(.7rem,2vw,1.25rem) auto;
   display:flex;justify-content:space-between;align-items:flex-start;z-index:20;pointer-events:none;
 }
+.game-hud-main{display:flex;align-items:flex-start;gap:.55rem;}
+.game-zone-card{min-width:150px;padding:.55rem .75rem;background:rgba(42,33,22,.78);color:#fffaf0;border:1px solid rgba(255,255,255,.35);border-radius:12px;box-shadow:0 10px 24px -16px rgba(30,20,8,.65);}
+.game-zone-label{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;opacity:.72;}
+.game-zone-name{display:block;font-family:var(--font-display);font-size:1rem;line-height:1.2;margin-top:.1rem;}
+.game-zone-progress{display:block;height:3px;margin-top:.42rem;border-radius:9px;background:rgba(255,255,255,.2);overflow:hidden;}
+.game-zone-progress i{display:block;width:0;height:100%;background:#f7c769;transition:width .35s ease;}
+.game-hud-actions{display:flex;gap:.45rem;pointer-events:auto;}
+.game-sound{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#F5EEDC;background:rgba(42,33,22,.78);border:1px solid rgba(245,238,220,.65);font-size:1.1rem;}
 .game-score-card{
   min-width:94px;padding:.55rem .9rem .65rem;background:rgba(255,251,242,.9);
   border:1px solid rgba(219,196,149,.85);border-radius:12px 12px 12px 3px;
@@ -919,10 +928,16 @@ a:focus-visible, button:focus-visible{
   position:absolute;left:22%;top:38%;z-index:8;width:clamp(58px,9vw,96px);
   will-change:transform;filter:drop-shadow(0 12px 9px rgba(30,20,8,.3));pointer-events:none;
 }
-.game-player svg{width:100%;height:auto;}
+.game-player{aspect-ratio:1/1;}
+.game-player .skin-sprite{width:100%;height:100%;}
 .game-player .mascot-shadow{display:none;}
-.game-player.is-flapping svg{animation:gameFlap .28s var(--ease);}
+.game-player.is-flapping .skin-sprite{animation:gameFlap .28s var(--ease);}
 @keyframes gameFlap{0%{transform:scaleY(1)}45%{transform:scaleY(.92) scaleX(1.06)}100%{transform:none}}
+.skin-sprite{display:block;aspect-ratio:1/1;background-image:url('assets/game/flappy-vo-skins.png');background-repeat:no-repeat;background-size:400% 200%;background-position:0 0;}
+.skin-sprite[data-skin="orange"]{background-position:0 0}.skin-sprite[data-skin="regular"]{background-position:33.333% 0}.skin-sprite[data-skin="corn"]{background-position:66.666% 0}.skin-sprite[data-skin="paper"]{background-position:100% 0}
+.skin-sprite[data-skin="banana"]{background-position:0 100%}.skin-sprite[data-skin="coconut"]{background-position:33.333% 100%}.skin-sprite[data-skin="watermelon"]{background-position:66.666% 100%}.skin-sprite[data-skin="golden-corn"]{background-position:100% 100%}
+.game-player.is-rare .skin-sprite{animation:rareFloat 1.35s ease-in-out infinite alternate;filter:drop-shadow(0 0 13px rgba(255,207,63,.85));}
+@keyframes rareFloat{to{transform:translateY(-4px) rotate(2deg);filter:drop-shadow(0 0 22px rgba(255,207,63,1))}}
 .game-obstacle{position:absolute;inset:0;z-index:7;pointer-events:none;will-change:transform;}
 .trash-bin{
   position:absolute;width:clamp(58px,8vw,88px);left:0;
@@ -943,6 +958,65 @@ a:focus-visible, button:focus-visible{
 }
 .trash-bin.top{top:0;transform:rotate(180deg);transform-origin:center;}
 .trash-bin.bottom{bottom:var(--game-ground);}
+.vo-game.stage-street .trash-bin,.vo-game.stage-city .trash-bin{background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 18% 78%,rgba(80,45,0,.2)),repeating-linear-gradient(90deg,transparent 0 18%,rgba(80,45,0,.08) 18% 21%),#d7a92f;border-color:#8a6412;}
+.vo-game.stage-street .trash-bin::before,.vo-game.stage-city .trash-bin::before{background:#efc84c;border-color:#8a6412;}
+.vo-game.stage-street .trash-bin::after,.vo-game.stage-city .trash-bin::after{color:#fff3bd;text-shadow:0 1px #8a6412;}
+.vo-game.stage-city .trash-bin{background:linear-gradient(90deg,rgba(255,255,255,.2),transparent 18% 78%,rgba(0,31,50,.22)),repeating-linear-gradient(90deg,transparent 0 18%,rgba(0,31,50,.1) 18% 21%),#287b8b;border-color:#154c5b;}
+.vo-game.stage-city .trash-bin::before{background:#42a4ad;border-color:#154c5b;}
+.vo-game.stage-special .trash-bin,.vo-game.stage-festival .trash-bin,.vo-game.stage-legendary .trash-bin{background:linear-gradient(135deg,rgba(255,255,255,.32),transparent 35%),linear-gradient(90deg,#7d4897,#d65d6e);border-color:#50255f;box-shadow:0 0 18px rgba(255,191,105,.45),inset 0 0 0 2px rgba(255,255,255,.13);}
+.vo-game.stage-special .trash-bin::before,.vo-game.stage-festival .trash-bin::before,.vo-game.stage-legendary .trash-bin::before{background:#f0a35d;border-color:#713757;}
+.vo-game.stage-special .trash-bin::after,.vo-game.stage-festival .trash-bin::after,.vo-game.stage-legendary .trash-bin::after{color:white;text-shadow:0 0 8px #fff;}
+.vo-game{transition:background 1s ease,box-shadow .8s ease;}
+.vo-game.stage-street{background:radial-gradient(circle at 80% 18%,#fff7cf 0 3%,transparent 3.5%),linear-gradient(#78c7d0 0%,#d7e9c9 68%,#afb77a 68% 86%,#a77c4e 86%);}
+.vo-game.stage-street .game-scenery::after{background:repeating-linear-gradient(90deg,transparent 0 4%,rgba(250,234,190,.82) 4% 9%,transparent 9% 12%);opacity:.8;}
+.vo-game.stage-city{background:radial-gradient(circle at 78% 15%,#fff4bd 0 4%,transparent 4.5%),linear-gradient(#69b1ca 0%,#cddfd4 68%,#8ba080 68% 86%,#866342 86%);}
+.vo-game.stage-city .game-scenery::after{height:38%;background:repeating-linear-gradient(90deg,#556b6f 0 8%,#45606a 8% 13%,#789095 13% 18%,transparent 18% 21%);clip-path:polygon(0 35%,8% 35%,8% 12%,13% 12%,13% 45%,18% 45%,18% 5%,30% 5%,30% 42%,39% 42%,39% 20%,50% 20%,50% 50%,59% 50%,59% 8%,70% 8%,70% 38%,78% 38%,78% 0,89% 0,89% 44%,100% 44%,100% 100%,0 100%);opacity:.78;}
+.vo-game.stage-glow{background:radial-gradient(circle at 76% 14%,#fff2b0 0 4%,transparent 4.6%),linear-gradient(#6f84b4 0%,#dc99a0 48%,#f3ba72 68%,#84906a 68% 86%,#866342 86%);box-shadow:inset 0 0 45px rgba(255,215,120,.18);}
+.vo-game.stage-glow .game-scenery::after{height:38%;background:repeating-linear-gradient(90deg,#554e6f 0 8%,#6e5e79 8% 13%,#897783 13% 18%,transparent 18% 21%);opacity:.8;}
+.vo-game.stage-special{background:radial-gradient(circle at 75% 15%,#ffd38c 0 4%,transparent 4.5%),linear-gradient(#4d456f 0%,#a46c86 48%,#efaa72 68%,#5f7656 68% 86%,#624730 86%);box-shadow:inset 0 0 55px rgba(255,188,104,.2);}
+.vo-game.stage-special .game-scenery::before{filter:hue-rotate(38deg) saturate(1.25);}
+.vo-game.stage-special .game-scenery::after{background:repeating-linear-gradient(90deg,rgba(47,34,67,.9) 0 9%,rgba(77,50,91,.9) 9% 17%,transparent 17% 20%);height:42%;opacity:.9;}
+.vo-game.stage-festival{background:radial-gradient(circle at 23% 17%,rgba(120,255,224,.35),transparent 18%),radial-gradient(circle at 77% 12%,rgba(255,177,235,.35),transparent 21%),linear-gradient(#293c64 0%,#67629a 50%,#d88c8b 68%,#536b54 68% 86%,#483728 86%);box-shadow:inset 0 0 70px rgba(125,235,210,.2);}
+.vo-game.stage-festival .game-scenery::after{background:repeating-linear-gradient(90deg,rgba(29,42,73,.95) 0 9%,rgba(57,53,91,.92) 9% 17%,transparent 17% 20%);height:44%;opacity:.92;}
+.vo-game.stage-legendary{background:radial-gradient(circle at 50% 22%,rgba(255,232,125,.34),transparent 30%),linear-gradient(#31264d 0%,#765278 48%,#e6a45d 68%,#516346 68% 86%,#3e2e25 86%);box-shadow:inset 0 0 85px rgba(255,215,76,.3);}
+.milestone-toast{position:absolute;z-index:25;left:50%;top:22%;transform:translate(-50%,-18px);padding:.72rem 1.1rem;color:#2a2116;background:#fff8e8;border:1px solid #e0b45a;border-radius:999px;box-shadow:0 14px 30px -14px rgba(30,20,8,.7);font-weight:800;opacity:0;pointer-events:none;white-space:nowrap;}
+.milestone-toast.show{animation:milestoneToast 2.35s ease both;}
+@keyframes milestoneToast{0%{opacity:0;transform:translate(-50%,-18px) scale(.9)}14%,75%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-10px)}}
+.game-particle{position:absolute;z-index:24;width:8px;height:8px;border-radius:50%;pointer-events:none;background:var(--particle,#f7c769);animation:gameBurst .85s ease-out forwards;}
+@keyframes gameBurst{to{transform:translate(var(--dx),var(--dy)) rotate(220deg);opacity:0}}
+.skin-unlock-toast{position:absolute;z-index:28;left:50%;top:50%;width:min(84%,330px);transform:translate(-50%,-50%) scale(.6);padding:1rem;text-align:center;color:#34251d;background:rgba(255,250,235,.97);border:2px solid #e8b94d;border-radius:20px;box-shadow:0 24px 70px -20px rgba(20,12,7,.8);opacity:0;pointer-events:none;}
+.skin-unlock-toast.show{animation:skinUnlock 3s var(--ease) both;}
+.skin-unlock-toast .skin-sprite{width:112px;margin:-.35rem auto .1rem;filter:drop-shadow(0 10px 10px rgba(75,44,10,.2));}
+.skin-unlock-toast b{display:block;font-family:var(--font-display);font-size:1.45rem;}.skin-unlock-toast span{font-size:.78rem;color:#71573e;}
+@keyframes skinUnlock{0%{opacity:0;transform:translate(-50%,-50%) scale(.55) rotate(-5deg)}12%,78%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}100%{opacity:0;transform:translate(-50%,-55%) scale(.9)}}
+.high-score-badge{display:none;margin:.15rem auto .7rem;width:max-content;padding:.35rem .75rem;border-radius:999px;background:linear-gradient(90deg,#7d4897,#d65d6e,#e9a848);color:white;font-weight:800;letter-spacing:.06em;text-transform:uppercase;animation:highScoreGlow 1.3s ease-in-out infinite alternate;}
+.high-score-badge.show{display:block;}
+@keyframes highScoreGlow{to{box-shadow:0 0 22px rgba(214,93,110,.55);transform:translateY(-2px)}}
+.unlock-progress{margin:.2rem auto 1rem;max-width:380px;padding:.72rem .85rem;border-radius:10px;background:#f7ecd4;color:#69563e;font-size:.83rem;}
+.unlock-progress strong{color:#433221;}
+.unlock-progress-bar{height:6px;margin-top:.48rem;border-radius:9px;background:#ddcfb3;overflow:hidden;}
+.unlock-progress-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#6d8644,#dba43b);transition:width .4s ease;}
+.game-progress-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:1rem;margin-top:1rem;}
+.progress-panel{padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 36px -32px rgba(var(--shadow-rgb),.5);}
+.progress-panel h3{font-size:1.05rem;margin-bottom:.75rem;}
+.journey-track{display:grid;grid-template-columns:repeat(7,1fr);gap:.45rem;}
+.journey-stop{padding:.65rem .55rem;border-radius:10px;background:var(--paper-alt);border:1px solid var(--border);opacity:.58;transition:.25s ease;}
+.journey-stop.unlocked{opacity:1;border-color:var(--olive);transform:translateY(-2px);}
+.journey-stop b,.journey-stop span{display:block;}.journey-stop b{font-size:.78rem}.journey-stop span{font-size:.68rem;color:var(--ink-soft);margin-top:.2rem;}
+.skin-list{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;}
+.skin-button{position:relative;display:grid;justify-items:center;gap:.15rem;padding:.55rem .4rem .65rem;border:1px solid var(--border);border-radius:12px;background:var(--paper-alt);font-size:.75rem;color:var(--ink);transition:.2s ease;overflow:hidden;}
+.skin-button .skin-sprite{width:min(100%,94px);transition:.25s ease;}.skin-button strong{font-size:.75rem;line-height:1.2}.skin-button small{font-size:.62rem;color:var(--ink-soft);line-height:1.2}
+.skin-button:not(:disabled):hover,.skin-button.selected{border-color:var(--terracotta);transform:translateY(-2px);}
+.skin-button.selected{background:color-mix(in srgb,var(--terracotta) 12%,var(--paper-alt));font-weight:800;}
+.skin-button:disabled{cursor:not-allowed;}.skin-button:disabled .skin-sprite{filter:grayscale(1) opacity(.28)}.skin-button:disabled::after{content:"🔒";position:absolute;top:.45rem;right:.5rem;font-size:.8rem;}
+.skin-button[data-skin="golden-corn"]{background:linear-gradient(145deg,var(--paper-alt),color-mix(in srgb,#ffd84b 18%,var(--paper-alt)));}.skin-button[data-skin="golden-corn"].selected{box-shadow:0 0 22px rgba(255,205,55,.28);}
+.mission-list{display:grid;gap:.45rem;margin:0;padding:0;list-style:none;}
+.mission-item{display:flex;align-items:center;gap:.55rem;font-size:.76rem;color:var(--ink-soft);}
+.mission-check{width:22px;height:22px;flex:0 0 22px;display:grid;place-items:center;border-radius:50%;background:var(--paper-alt);border:1px solid var(--border);font-size:.7rem;}
+.mission-item.complete{color:var(--ink);font-weight:700}.mission-item.complete .mission-check{background:var(--olive);border-color:var(--olive);color:white;}
+.achievement-badges{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.7rem;}
+.achievement-badge{display:none;padding:.35rem .62rem;border-radius:999px;background:color-mix(in srgb,var(--olive) 14%,var(--paper-alt));border:1px solid color-mix(in srgb,var(--olive) 55%,var(--border));color:var(--olive-deep);font-size:.7rem;font-weight:800;}
+.achievement-badge.unlocked{display:inline-flex;align-items:center;gap:.3rem;}
 .game-overlay{
   position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:clamp(1rem,4vw,2rem);
   background:linear-gradient(rgba(245,238,220,.76),rgba(245,238,220,.9));
@@ -983,6 +1057,7 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
   .game-player{left:18%;width:clamp(58px,18vw,78px);}
   .trash-bin{width:clamp(56px,16vw,72px);}
   .game-tip{gap:.65rem}.game-tip .desktop-control{display:none;}
+  .game-zone-card{min-width:118px}.game-zone-name{font-size:.85rem}.game-progress-grid{grid-template-columns:1fr}.journey-track{grid-template-columns:repeat(2,1fr)}.skin-list{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:440px){
   .brand{gap:.45rem;}
@@ -997,8 +1072,9 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
   .game-start-mascot{width:82px;}
   .game-result{margin-block:.7rem 1rem;}
   .game-actions .btn{width:100%;padding:.78em 1.25em;}
+  .game-score-card{min-width:72px;padding:.48rem .65rem}.game-zone-card{min-width:96px;padding:.48rem .6rem}.game-zone-label{display:none}.game-sound,.game-pause{width:42px;height:42px}.game-hud-actions{gap:.3rem}
 }
-@media(prefers-reduced-motion:reduce){.game-start-mascot,.game-player.is-flapping svg{animation:none!important;}}
+@media(prefers-reduced-motion:reduce){.game-start-mascot,.game-player.is-flapping .skin-sprite,.game-player.is-rare .skin-sprite{animation:none!important;}}
 </style></head>
 <body>
 <a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
@@ -1029,7 +1105,7 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
 </defs>
 <symbol id="mascotVo" viewbox="0 0 220 260">
 <ellipse class="mascot-shadow" cx="108" cy="238" rx="58" ry="11"></ellipse>
-<path d="M108,58 C162,52 190,96 182,142 C175,184 140,214 98,211 C56,208 30,174 37,132 C43,90 68,64 108,58 Z" fill="url(#mascotGrad)"></path>
+<path class="mascot-body" d="M108,58 C162,52 190,96 182,142 C175,184 140,214 98,211 C56,208 30,174 37,132 C43,90 68,64 108,58 Z"></path>
 <path class="mascot-torn" d="M52,192 L63,203 L74,193 L86,204 L97,194 L110,205 L123,194 L135,204 L146,193 L158,201 L163,186 C142,215 78,219 52,192 Z"></path>
 <path d="M82,78 C93,72 110,72 119,80 C105,77 91,82 83,94 Z" fill="rgba(255,255,255,.4)"></path>
 <path class="mascot-leaf" d="M106,54 C97,32 110,14 130,10 C127,32 118,48 106,54 Z"></path>
@@ -1131,18 +1207,26 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
 <div aria-hidden="true" class="game-scenery"></div>
 <div aria-hidden="true" class="game-obstacles" id="gameObstacles"></div>
 <div aria-hidden="true" class="game-player" id="gamePlayer">
-<svg viewbox="0 0 220 260"><use href="#mascotVo"></use></svg>
+<span class="skin-sprite" data-skin="orange" id="gamePlayerSprite"></span>
 </div>
 <div aria-hidden="true" class="game-ground"></div>
 <div class="game-hud">
+<div class="game-hud-main">
 <div aria-live="polite" class="game-score-card"><span data-en="Score" data-vi="Điểm">Điểm</span><strong id="gameScore">0</strong></div>
+<div class="game-zone-card"><span class="game-zone-label" data-en="Current area" data-vi="Khu vực hiện tại">Khu vực hiện tại</span><strong class="game-zone-name" id="gameZoneName">Khu dân cư</strong><span class="game-zone-progress"><i id="gameZoneProgress"></i></span></div>
+</div>
+<div class="game-hud-actions">
+<button aria-label="Bật hoặc tắt âm thanh" class="game-sound" id="gameSound" type="button">♪</button>
 <button aria-label="Tạm dừng trò chơi" class="game-pause" id="pauseGame" type="button">
 <svg aria-hidden="true" viewbox="0 0 24 24"><path d="M7 5h4v14H7zm6 0h4v14h-4z"></path></svg>
 </button>
 </div>
+</div>
+<div aria-live="polite" class="milestone-toast" id="milestoneToast"></div>
+<div aria-live="assertive" class="skin-unlock-toast" id="skinUnlockToast"><span class="skin-sprite" data-skin="corn"></span><b id="skinUnlockTitle">Mở khóa skin mới!</b><span id="skinUnlockCopy">Vỏ bắp đã gia nhập bộ sưu tập.</span></div>
 <div class="game-overlay" id="startScreen">
 <div class="game-panel">
-<div aria-hidden="true" class="game-start-mascot"><svg viewbox="0 0 220 260"><use href="#mascotVo"></use></svg></div>
+<div aria-hidden="true" class="game-start-mascot"><span class="skin-sprite" data-skin="orange" id="startMascotSprite"></span></div>
 <h3 data-en="Flappy Vỏ" data-vi="Flappy Vỏ">Flappy Vỏ</h3>
 <p data-en="Help Vỏ jump over the trash bins! Tap, click or press Space to fly." data-vi="Giúp Vỏ bay qua các thùng rác! Chạm, click hoặc nhấn Space để cất cánh.">Giúp Vỏ bay qua các thùng rác! Chạm, click hoặc nhấn Space để cất cánh.</p>
 <button class="btn btn-primary" data-en="▶ Start" data-vi="▶ Bắt đầu" id="startGame" type="button">▶ Bắt đầu</button>
@@ -1161,10 +1245,12 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
 <div class="game-overlay" hidden id="gameOverScreen">
 <div class="game-panel">
 <h3 data-en="Game Over" data-vi="Game Over">Game Over</h3>
+<div class="high-score-badge" id="highScoreBadge">★ High Score</div>
 <div class="game-result">
 <div><span data-en="Score" data-vi="Điểm">Điểm</span><strong id="finalScore">0</strong></div>
 <div><span data-en="Best" data-vi="Kỷ lục">Kỷ lục</span><strong id="bestScore">0</strong></div>
 </div>
+<div class="unlock-progress" id="unlockProgress"><strong>0/10 điểm</strong> – còn 10 điểm để mở khóa Khu phố!<div class="unlock-progress-bar"><i></i></div></div>
 <div class="game-actions">
 <button class="btn btn-primary" data-en="↻ Play Again" data-vi="↻ Chơi lại" id="playAgain" type="button">↻ Chơi lại</button>
 <a class="btn btn-ghost" data-en="⌂ Back to Home" data-vi="⌂ Về trang chủ" href="#hero">⌂ Về trang chủ</a>
@@ -1187,11 +1273,51 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
 </div>
 </div>
 </div>
+<div class="game-progress-grid">
+<section class="progress-panel" aria-labelledby="journeyTitle">
+<h3 id="journeyTitle" data-en="Journey milestones" data-vi="Các mốc hành trình">Các mốc hành trình</h3>
+<div class="journey-track" id="journeyTrack">
+<div class="journey-stop unlocked" data-stage="0"><b data-en="Neighborhood" data-vi="Khu dân cư">Khu dân cư</b><span>0+</span></div>
+<div class="journey-stop" data-stage="10"><b data-en="Green street" data-vi="Phố xanh">Phố xanh</b><span>10+</span></div>
+<div class="journey-stop" data-stage="20"><b data-en="City" data-vi="Thành thị">Thành thị</b><span>20+</span></div>
+<div class="journey-stop" data-stage="30"><b data-en="Golden hour" data-vi="Giờ vàng">Giờ vàng</b><span>30+</span></div>
+<div class="journey-stop" data-stage="40"><b data-en="Special zone" data-vi="Khu đặc biệt">Khu đặc biệt</b><span>40+</span></div>
+<div class="journey-stop" data-stage="50"><b data-en="Light festival" data-vi="Lễ hội ánh sáng">Lễ hội ánh sáng</b><span>50+</span></div>
+<div class="journey-stop" data-stage="75"><b data-en="Legendary" data-vi="Huyền thoại">Huyền thoại</b><span>75+</span></div>
+</div>
+</section>
+<section class="progress-panel" aria-labelledby="skinTitle">
+<h3 id="skinTitle" data-en="Vỏ collection" data-vi="Bộ sưu tập Vỏ">Bộ sưu tập Vỏ</h3>
+<div class="skin-list" id="skinList">
+<button class="skin-button selected" data-skin="orange" type="button"><span class="skin-sprite" data-skin="orange"></span><strong data-en="Orange Peel" data-vi="Vỏ cam">Vỏ cam</strong><small data-en="Default skin" data-vi="Skin mặc định">Skin mặc định</small></button>
+<button class="skin-button" data-skin="regular" type="button"><span class="skin-sprite" data-skin="regular"></span><strong data-en="Regular Peel" data-vi="Vỏ thường">Vỏ thường</strong><small data-en="Available" data-vi="Có sẵn">Có sẵn</small></button>
+<button class="skin-button" data-skin="corn" disabled type="button"><span class="skin-sprite" data-skin="corn"></span><strong data-en="Corn Vỏ" data-vi="Vỏ bắp">Vỏ bắp</strong><small data-en="Reach 10 points" data-vi="Đạt 10 điểm">Đạt 10 điểm</small></button>
+<button class="skin-button" data-skin="paper" disabled type="button"><span class="skin-sprite" data-skin="paper"></span><strong data-en="Paper" data-vi="Tờ giấy">Tờ giấy</strong><small data-en="Reach 20 points" data-vi="Đạt 20 điểm">Đạt 20 điểm</small></button>
+<button class="skin-button" data-skin="banana" disabled type="button"><span class="skin-sprite" data-skin="banana"></span><strong data-en="Banana Peel" data-vi="Vỏ chuối">Vỏ chuối</strong><small data-en="Reach 30 points" data-vi="Đạt 30 điểm">Đạt 30 điểm</small></button>
+<button class="skin-button" data-skin="coconut" disabled type="button"><span class="skin-sprite" data-skin="coconut"></span><strong data-en="Coconut" data-vi="Vỏ dừa">Vỏ dừa</strong><small data-en="Reach 40 points" data-vi="Đạt 40 điểm">Đạt 40 điểm</small></button>
+<button class="skin-button" data-skin="watermelon" disabled type="button"><span class="skin-sprite" data-skin="watermelon"></span><strong data-en="Watermelon Rind" data-vi="Vỏ dưa hấu">Vỏ dưa hấu</strong><small data-en="Reach 50 points" data-vi="Đạt 50 điểm">Đạt 50 điểm</small></button>
+<button class="skin-button" data-skin="golden-corn" disabled type="button"><span class="skin-sprite" data-skin="golden-corn"></span><strong data-en="Golden Corn" data-vi="Vỏ bắp vàng">Vỏ bắp vàng</strong><small data-en="Rare · Reach 75 points" data-vi="Hiếm · Đạt 75 điểm">Hiếm · Đạt 75 điểm</small></button>
+</div>
+</section>
+<section class="progress-panel" aria-labelledby="missionTitle" style="grid-column:1/-1">
+<h3 id="missionTitle" data-en="Mini missions" data-vi="Nhiệm vụ nhỏ">Nhiệm vụ nhỏ</h3>
+<ul class="mission-list" id="missionList">
+<li class="mission-item" data-mission="score10"><span class="mission-check">○</span><span data-en="Reach 10 points — unlock Corn Vỏ" data-vi="Đạt 10 điểm — mở khóa Vỏ bắp">Đạt 10 điểm — mở khóa Vỏ bắp</span></li>
+<li class="mission-item" data-mission="streak5"><span class="mission-check">○</span><span data-en="Pass 5 bins in a row — Green Rhythm badge" data-vi="Vượt 5 thùng liên tiếp — badge Nhịp xanh">Vượt 5 thùng liên tiếp — badge Nhịp xanh</span></li>
+<li class="mission-item" data-mission="score20"><span class="mission-check">○</span><span data-en="Reach 20 without collision — unlock Paper" data-vi="Đạt 20 điểm không va chạm — mở khóa Tờ giấy">Đạt 20 điểm không va chạm — mở khóa Tờ giấy</span></li>
+<li class="mission-item" data-mission="runs5"><span class="mission-check">○</span><span data-en="Play 5 runs — unlock golden trail" data-vi="Chơi đủ 5 lượt — mở khóa vệt sáng vàng">Chơi đủ 5 lượt — mở khóa vệt sáng vàng</span></li>
+</ul>
+<div class="achievement-badges" aria-live="polite">
+<span class="achievement-badge" data-badge="streak5" data-en="♻ Green Rhythm" data-vi="♻ Nhịp xanh">♻ Nhịp xanh</span>
+<span class="achievement-badge" data-badge="runs5" data-en="✦ Persistent Flyer" data-vi="✦ Cánh bay bền bỉ">✦ Cánh bay bền bỉ</span>
+</div>
+</section>
+</div>
 <div class="game-tip" aria-hidden="true">
 <span class="desktop-control"><kbd>Space</kbd><span data-en="to flap" data-vi="để bay">để bay</span></span>
 <span class="desktop-control">● <span data-en="Click to flap" data-vi="Click để bay">Click để bay</span></span>
 <span>☝ <span data-en="Tap to flap" data-vi="Chạm để bay">Chạm để bay</span></span>
-<span>🏆 <span data-en="Reach 15 to win" data-vi="Đạt 15 điểm để thắng">Đạt 15 điểm để thắng</span></span>
+<span>🏆 <span data-en="Go farther to unlock new areas" data-vi="Bay xa để mở khóa khu vực mới">Bay xa để mở khóa khu vực mới</span></span>
 </div>
 </div>
 </section>
@@ -1676,11 +1802,23 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     var bestScoreEl = document.getElementById('bestScore');
     var winScoreEl = document.getElementById('winScore');
     var winBestScoreEl = document.getElementById('winBestScore');
-    var WIN_SCORE = 15;
-    var storageKey = 'vo-flappy-best';
+    var zoneNameEl = document.getElementById('gameZoneName');
+    var zoneProgressEl = document.getElementById('gameZoneProgress');
+    var milestoneToast = document.getElementById('milestoneToast');
+    var skinUnlockToast = document.getElementById('skinUnlockToast');
+    var skinUnlockTitle = document.getElementById('skinUnlockTitle');
+    var skinUnlockCopy = document.getElementById('skinUnlockCopy');
+    var playerSprite = document.getElementById('gamePlayerSprite');
+    var startMascotSprite = document.getElementById('startMascotSprite');
+    var unlockProgress = document.getElementById('unlockProgress');
+    var highScoreBadge = document.getElementById('highScoreBadge');
+    var soundButton = document.getElementById('gameSound');
+    var startMascot = startScreen.querySelector('.game-start-mascot');
+    var storageKey = 'vo-flappy-profile-v2';
     var gameState = 'start';
     var score = 0;
     var bestScore = 0;
+    var runStartBest = 0;
     var width = 0;
     var height = 0;
     var floorY = 0;
@@ -1691,8 +1829,165 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     var spawnClock = 0;
     var lastTime = 0;
     var animationId = 0;
+    var audioContext = null;
+    var soundEnabled = true;
+    var profile = {best:0,runs:0,selectedSkin:'orange',missions:{},unlockedSkins:['orange','regular'],seenUnlocks:{}};
+    var skinDefs = [
+      {key:'orange',min:0,vi:'Vỏ cam',en:'Orange Peel'},
+      {key:'regular',min:0,vi:'Vỏ thường',en:'Regular Peel'},
+      {key:'corn',min:10,vi:'Vỏ bắp',en:'Corn Vỏ'},
+      {key:'paper',min:20,vi:'Tờ giấy',en:'Paper'},
+      {key:'banana',min:30,vi:'Vỏ chuối',en:'Banana Peel'},
+      {key:'coconut',min:40,vi:'Vỏ dừa',en:'Coconut'},
+      {key:'watermelon',min:50,vi:'Vỏ dưa hấu',en:'Watermelon Rind'},
+      {key:'golden-corn',min:75,vi:'Vỏ bắp vàng',en:'Golden Corn'}
+    ];
+    var stages = [
+      {min:0,key:'residential',vi:'Khu dân cư',en:'Neighborhood'},
+      {min:10,key:'street',vi:'Phố xanh',en:'Green street'},
+      {min:20,key:'city',vi:'Thành thị',en:'City'},
+      {min:30,key:'glow',vi:'Giờ vàng',en:'Golden hour'},
+      {min:40,key:'special',vi:'Khu đặc biệt',en:'Special zone'},
+      {min:50,key:'festival',vi:'Lễ hội ánh sáng',en:'Light festival'},
+      {min:75,key:'legendary',vi:'Huyền thoại',en:'Legendary'}
+    ];
 
-    try{ bestScore = parseInt(localStorage.getItem(storageKey),10) || 0; }catch(e){}
+    try{
+      var savedProfile = JSON.parse(localStorage.getItem(storageKey) || 'null');
+      if(savedProfile){
+        profile.best = Number(savedProfile.best) || 0;
+        profile.runs = Number(savedProfile.runs) || 0;
+        profile.selectedSkin = savedProfile.selectedSkin || 'orange';
+        profile.missions = savedProfile.missions || {};
+        profile.unlockedSkins = Array.isArray(savedProfile.unlockedSkins) ? savedProfile.unlockedSkins : ['orange','regular'];
+        profile.seenUnlocks = savedProfile.seenUnlocks || {};
+      }else{
+        profile.best = parseInt(localStorage.getItem('vo-flappy-best'),10) || 0;
+      }
+    }catch(e){}
+    bestScore = profile.best;
+    if(profile.best >= 5) profile.missions.streak5 = true;
+    if(profile.best >= 10) profile.missions.score10 = true;
+    if(profile.best >= 20) profile.missions.score20 = true;
+    if(profile.runs >= 5) profile.missions.runs5 = true;
+    if(profile.selectedSkin === 'mekong') profile.selectedSkin = 'banana';
+    skinDefs.forEach(function(def){
+      if(profile.best >= def.min && profile.unlockedSkins.indexOf(def.key) < 0) profile.unlockedSkins.push(def.key);
+    });
+
+    function lang(){ return root.getAttribute('data-lang') === 'en' ? 'en' : 'vi'; }
+    function saveProfile(){
+      try{ localStorage.setItem(storageKey,JSON.stringify(profile)); }catch(e){}
+    }
+    function unlockedSkin(skin){
+      return profile.unlockedSkins.indexOf(skin) >= 0;
+    }
+    if(!unlockedSkin(profile.selectedSkin)) profile.selectedSkin = 'orange';
+
+    function applySkin(skin){
+      if(!unlockedSkin(skin)) return;
+      playerSprite.setAttribute('data-skin',skin);
+      startMascotSprite.setAttribute('data-skin',skin);
+      player.classList.toggle('is-rare',skin === 'golden-corn');
+      profile.selectedSkin = skin;
+      saveProfile();
+      renderProgressUI();
+    }
+
+    function completeMission(id){
+      if(profile.missions[id]) return;
+      profile.missions[id] = true;
+      saveProfile();
+      renderProgressUI();
+    }
+
+    function renderProgressUI(){
+      document.querySelectorAll('.journey-stop').forEach(function(stop){
+        stop.classList.toggle('unlocked',profile.best >= Number(stop.getAttribute('data-stage')));
+      });
+      document.querySelectorAll('.mission-item').forEach(function(item){
+        var complete = !!profile.missions[item.getAttribute('data-mission')];
+        item.classList.toggle('complete',complete);
+        item.querySelector('.mission-check').textContent = complete ? '✓' : '○';
+      });
+      document.querySelectorAll('.achievement-badge').forEach(function(badge){
+        badge.classList.toggle('unlocked',!!profile.missions[badge.getAttribute('data-badge')]);
+      });
+      document.querySelectorAll('.skin-button').forEach(function(button){
+        var skin = button.getAttribute('data-skin');
+        var unlocked = unlockedSkin(skin);
+        button.disabled = !unlocked;
+        button.classList.toggle('selected',profile.selectedSkin === skin);
+      });
+    }
+
+    function unlockSkin(def){
+      if(profile.unlockedSkins.indexOf(def.key) < 0) profile.unlockedSkins.push(def.key);
+      if(profile.seenUnlocks[def.key]){ saveProfile(); renderProgressUI(); return; }
+      profile.seenUnlocks[def.key] = true;
+      var preview = skinUnlockToast.querySelector('.skin-sprite');
+      preview.setAttribute('data-skin',def.key);
+      skinUnlockTitle.textContent = lang() === 'en' ? 'New skin unlocked!' : 'Mở khóa skin mới!';
+      skinUnlockCopy.textContent = def[lang()] + (lang() === 'en' ? ' joined your collection.' : ' đã gia nhập bộ sưu tập.');
+      skinUnlockToast.classList.remove('show'); void skinUnlockToast.offsetWidth; skinUnlockToast.classList.add('show');
+      particleBurst(true);
+      [659,784,988].forEach(function(note,index){ playTone(note,.28,index*.09); });
+      saveProfile();
+      renderProgressUI();
+    }
+
+    function playTone(frequency,duration,delay){
+      if(!soundEnabled) return;
+      try{
+        audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        var oscillator = audioContext.createOscillator();
+        var gain = audioContext.createGain();
+        var start = audioContext.currentTime + (delay || 0);
+        oscillator.type = 'sine'; oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(.0001,start);
+        gain.gain.exponentialRampToValueAtTime(.075,start + .012);
+        gain.gain.exponentialRampToValueAtTime(.0001,start + duration);
+        oscillator.connect(gain); gain.connect(audioContext.destination);
+        oscillator.start(start); oscillator.stop(start + duration + .02);
+      }catch(e){}
+    }
+
+    function particleBurst(big){
+      var count = big ? 18 : 3;
+      for(var i=0;i<count;i++){
+        var dot = document.createElement('i');
+        dot.className = 'game-particle';
+        dot.style.left = (big ? 50 : 25) + '%';
+        dot.style.top = (big ? 40 : Math.min(80,playerY / Math.max(1,height) * 100 + 8)) + '%';
+        dot.style.setProperty('--dx',((Math.random()-.5) * (big ? 260 : 65)) + 'px');
+        dot.style.setProperty('--dy',((Math.random()-.55) * (big ? 190 : 55)) + 'px');
+        dot.style.setProperty('--particle',['#f7c769','#d65d6e','#6fa68a','#fff4d0'][i%4]);
+        game.appendChild(dot);
+        setTimeout(function(el){ el.remove(); },900,dot);
+      }
+    }
+
+    function currentStage(){
+      for(var i=stages.length-1;i>=0;i--){ if(score >= stages[i].min) return stages[i]; }
+      return stages[0];
+    }
+
+    function updateStage(celebrate){
+      var stage = currentStage();
+      game.classList.remove('stage-street','stage-city','stage-glow','stage-special','stage-festival','stage-legendary');
+      if(stage.key !== 'residential') game.classList.add('stage-' + stage.key);
+      zoneNameEl.textContent = stage[lang()];
+      var stageIndex = stages.indexOf(stage);
+      var nextStage = stages[stageIndex + 1];
+      zoneProgressEl.style.width = (nextStage ? Math.min(100,(score-stage.min)/(nextStage.min-stage.min)*100) : 100) + '%';
+      if(celebrate && stage.min){
+        milestoneToast.textContent = (lang() === 'en' ? 'New area: ' : 'Khu vực mới: ') + stage[lang()] + ' ✦';
+        milestoneToast.classList.remove('show'); void milestoneToast.offsetWidth; milestoneToast.classList.add('show');
+        particleBurst(true);
+        var melody = score === 50 ? [392,523,659,880] : score === 75 ? [523,659,784,1046] : [523,659,784];
+        melody.forEach(function(note,index){ playTone(note,.24,index*.08); });
+      }
+    }
 
     function setOverlay(active){
       [startScreen,pauseScreen,gameOverScreen,winScreen].forEach(function(screen){
@@ -1731,7 +2026,23 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     function updateBest(){
       if(score > bestScore){
         bestScore = score;
-        try{ localStorage.setItem(storageKey,String(bestScore)); }catch(e){}
+        profile.best = bestScore;
+        saveProfile();
+      }
+    }
+
+    function renderNextUnlock(){
+      var progressValue = bestScore;
+      var nextSkin = skinDefs.find(function(def){ return def.min > progressValue; });
+      if(!nextSkin){
+        unlockProgress.innerHTML = '<strong>' + (lang() === 'en' ? 'Full collection unlocked!' : 'Đã mở khóa toàn bộ bộ sưu tập!') + '</strong><div class="unlock-progress-bar"><i style="width:100%"></i></div>';
+      }else{
+        var target = nextSkin.min;
+        var remaining = target - progressValue;
+        var copy = lang() === 'en'
+          ? '<strong>' + progressValue + '/' + target + ' points</strong> — ' + remaining + ' more to unlock ' + nextSkin.en + '!'
+          : '<strong>' + progressValue + '/' + target + ' điểm</strong> – còn ' + remaining + ' điểm để mở khóa ' + nextSkin.vi + '!';
+        unlockProgress.innerHTML = copy + '<div class="unlock-progress-bar"><i style="width:' + Math.min(100,progressValue/target*100) + '%"></i></div>';
       }
     }
 
@@ -1787,11 +2098,16 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       playerY = Math.max(54,height * .38);
       spawnClock = .55;
       lastTime = 0;
+      updateStage(false);
       renderPlayer();
     }
 
     function startGame(){
       resetGame();
+      runStartBest = bestScore;
+      profile.runs += 1;
+      if(profile.runs >= 5) completeMission('runs5');
+      saveProfile();
       gameState = 'running';
       setOverlay(null);
       game.focus({preventScroll:true});
@@ -1827,6 +2143,7 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     function finishGame(won){
       gameState = won ? 'won' : 'over';
       cancelAnimationFrame(animationId);
+      var isNewBest = score > runStartBest;
       updateBest();
       if(won){
         winScoreEl.textContent = score;
@@ -1836,6 +2153,9 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       }else{
         finalScoreEl.textContent = score;
         bestScoreEl.textContent = bestScore;
+        highScoreBadge.classList.toggle('show',score >= 30 || (isNewBest && score > 0));
+        renderNextUnlock();
+        renderProgressUI();
         setOverlay(gameOverScreen);
         document.getElementById('playAgain').focus({preventScroll:true});
       }
@@ -1859,8 +2179,9 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       var dt = Math.min((time - lastTime) / 1000,.034);
       lastTime = time;
       var gravity = height * 1.85;
-      var speed = width * (.235 + Math.min(score,20) * .0045);
-      var interval = Math.max(1.2,1.72 - score * .018);
+      var stageBoost = stages.indexOf(currentStage()) * .008;
+      var speed = width * (.235 + stageBoost + Math.min(score,50) * .0014);
+      var interval = Math.max(1.16,1.72 - Math.min(score,50) * .0105);
 
       velocityY += gravity * dt;
       playerY += velocityY * dt;
@@ -1880,7 +2201,19 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
           obstacle.passed = true;
           score += 1;
           scoreEl.textContent = score;
-          if(score >= WIN_SCORE){ finishGame(true); return; }
+          var isNewPersonalBest = score > bestScore;
+          if(isNewPersonalBest){ bestScore = score; profile.best = score; saveProfile(); }
+          if(score >= 5) completeMission('streak5');
+          if(score >= 10) completeMission('score10');
+          if(score >= 20) completeMission('score20');
+          var unlockedNow = skinDefs.find(function(def){ return def.min === score && def.min > 0; });
+          if(unlockedNow && (isNewPersonalBest || !unlockedSkin(unlockedNow.key))) unlockSkin(unlockedNow);
+          if(score >= 30 || profile.missions.runs5) particleBurst(false);
+          if(profile.selectedSkin === 'golden-corn') particleBurst(false);
+          playTone(350 + Math.min(score,30) * 8,.09,0);
+          var isMilestone = !!unlockedNow;
+          updateStage(isMilestone);
+          if(isMilestone) renderProgressUI();
         }
         if(obstacle.x + obstacleWidth < -20){
           obstacle.el.remove();
@@ -1903,6 +2236,16 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     document.getElementById('restartPausedGame').addEventListener('click',startGame);
     document.getElementById('pauseGame').addEventListener('click',function(e){ e.stopPropagation(); pauseGame(); });
     document.getElementById('resumeGame').addEventListener('click',function(e){ e.stopPropagation(); resumeGame(); });
+    soundButton.addEventListener('click',function(e){
+      e.stopPropagation();
+      soundEnabled = !soundEnabled;
+      soundButton.textContent = soundEnabled ? '♪' : '×';
+      soundButton.setAttribute('aria-label',soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh');
+      if(soundEnabled) playTone(520,.1,0);
+    });
+    document.querySelectorAll('.skin-button').forEach(function(button){
+      button.addEventListener('click',function(){ applySkin(button.getAttribute('data-skin')); });
+    });
     game.addEventListener('pointerdown',function(e){
       if(e.target.closest('button,a')) return;
       if(gameState === 'running'){
@@ -1936,6 +2279,13 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     });
     measureGame();
     bestScoreEl.textContent = bestScore;
+    winBestScoreEl.textContent = bestScore;
+    applySkin(profile.selectedSkin);
+    renderProgressUI();
+    updateStage(false);
+    langToggle.addEventListener('click',function(){
+      setTimeout(function(){ updateStage(false); renderProgressUI(); if(gameState === 'over') renderNextUnlock(); },0);
+    });
   }
 
   /* scroll reveal */

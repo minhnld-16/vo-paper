@@ -1044,6 +1044,13 @@ a:focus-visible, button:focus-visible{
 .game-result div+div{border-left:1px solid #DBC495;}
 .game-result span{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:#6B5A42;}
 .game-result strong{font-family:var(--font-display);font-size:2rem;line-height:1.1;}
+.score-journey{margin:-.45rem auto 1rem;max-width:380px;padding:.78rem .9rem;border:1px solid #DBC495;border-radius:10px;background:#FFFBF2;text-align:left;}
+.score-journey-title{font-size:.78rem;font-weight:800;color:#433221;}
+.score-journey-status{margin:.18rem 0 .55rem!important;max-width:none!important;font-size:.75rem!important;color:#6B5A42!important;}
+.score-history{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;}
+.score-history-label{font-size:.68rem;color:#806d53;margin-right:.1rem;}
+.score-history-score{display:inline-grid;place-items:center;min-width:30px;height:25px;padding:0 .42rem;border-radius:999px;background:#F5EEDC;border:1px solid #DBC495;color:#433221;font-size:.72rem;font-weight:800;}
+.score-history-score.reached{background:#DFE2C0;border-color:#8b985e;color:#3E4A22;}
 .game-tip{
   display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:var(--sp-sm);
   color:var(--ink-soft);font-size:var(--fs-xs);
@@ -1249,6 +1256,11 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
 <div class="game-result">
 <div><span data-en="Score" data-vi="Điểm">Điểm</span><strong id="finalScore">0</strong></div>
 <div><span data-en="Best" data-vi="Kỷ lục">Kỷ lục</span><strong id="bestScore">0</strong></div>
+</div>
+<div class="score-journey" id="scoreJourney" aria-live="polite">
+<div class="score-journey-title" id="scoreJourneyTitle">Thử thách: vượt 15</div>
+<p class="score-journey-status" id="scoreJourneyStatus">Chưa bắt đầu thử thách.</p>
+<div class="score-history" id="scoreHistory"></div>
 </div>
 <div class="unlock-progress" id="unlockProgress"><strong>0/10 điểm</strong> – còn 10 điểm để mở khóa Khu phố!<div class="unlock-progress-bar"><i></i></div></div>
 <div class="game-actions">
@@ -1812,6 +1824,9 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     var startMascotSprite = document.getElementById('startMascotSprite');
     var unlockProgress = document.getElementById('unlockProgress');
     var highScoreBadge = document.getElementById('highScoreBadge');
+    var scoreJourneyTitle = document.getElementById('scoreJourneyTitle');
+    var scoreJourneyStatus = document.getElementById('scoreJourneyStatus');
+    var scoreHistory = document.getElementById('scoreHistory');
     var soundButton = document.getElementById('gameSound');
     var startMascot = startScreen.querySelector('.game-start-mascot');
     var storageKey = 'vo-flappy-profile-v2';
@@ -1831,7 +1846,8 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     var animationId = 0;
     var audioContext = null;
     var soundEnabled = true;
-    var profile = {best:0,runs:0,selectedSkin:'orange',missions:{},unlockedSkins:['orange','regular'],seenUnlocks:{}};
+    var challenge15Attempt = 0;
+    var profile = {best:0,runs:0,challenge15:{attempts:0,scores:[],completedIn:null},selectedSkin:'orange',missions:{},unlockedSkins:['orange','regular'],seenUnlocks:{}};
     var skinDefs = [
       {key:'orange',min:0,vi:'Vỏ cam',en:'Orange Peel'},
       {key:'regular',min:0,vi:'Vỏ thường',en:'Regular Peel'},
@@ -1857,6 +1873,12 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       if(savedProfile){
         profile.best = Number(savedProfile.best) || 0;
         profile.runs = Number(savedProfile.runs) || 0;
+        if(savedProfile.challenge15){
+          profile.challenge15.attempts = Math.max(0,Number(savedProfile.challenge15.attempts) || 0);
+          profile.challenge15.scores = Array.isArray(savedProfile.challenge15.scores) ? savedProfile.challenge15.scores.map(Number).filter(Number.isFinite) : [];
+          var completedIn = Number(savedProfile.challenge15.completedIn);
+          profile.challenge15.completedIn = completedIn > 0 ? completedIn : null;
+        }
         profile.selectedSkin = savedProfile.selectedSkin || 'orange';
         profile.missions = savedProfile.missions || {};
         profile.unlockedSkins = Array.isArray(savedProfile.unlockedSkins) ? savedProfile.unlockedSkins : ['orange','regular'];
@@ -2046,6 +2068,60 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       }
     }
 
+    function renderScoreJourney(){
+      var isEnglish = lang() === 'en';
+      var challenge = profile.challenge15;
+      scoreJourneyTitle.textContent = isEnglish ? 'Challenge: pass 15' : 'Thử thách: vượt 15';
+      if(challenge.completedIn === 1){
+        scoreJourneyStatus.textContent = isEnglish
+          ? 'You passed 15 on your very first attempt!'
+          : 'Bạn đã vượt 15 ngay ở lượt đầu tiên!';
+      }else if(challenge.completedIn > 1){
+        scoreJourneyStatus.textContent = isEnglish
+          ? 'You played ' + (challenge.completedIn-1) + ' earlier attempts and passed 15 on attempt ' + challenge.completedIn + '.'
+          : 'Bạn đã chơi ' + (challenge.completedIn-1) + ' lượt trước đó và vượt 15 ở lượt thứ ' + challenge.completedIn + '.';
+      }else if(challenge.attempts > 0){
+        scoreJourneyStatus.textContent = isEnglish
+          ? challenge.attempts + ' attempt(s) played · reach at least 16 points to finish.'
+          : 'Đã chơi ' + challenge.attempts + ' lượt · cần đạt ít nhất 16 điểm để hoàn thành.';
+      }else{
+        scoreJourneyStatus.textContent = isEnglish
+          ? 'No attempts yet · reach at least 16 points to finish.'
+          : 'Chưa có lượt thử · đạt ít nhất 16 điểm để hoàn thành.';
+      }
+      scoreHistory.innerHTML = '';
+      var label = document.createElement('span');
+      label.className = 'score-history-label';
+      label.textContent = isEnglish ? 'Attempt scores:' : 'Điểm từng lượt:';
+      scoreHistory.appendChild(label);
+      if(!challenge.scores.length){
+        var empty = document.createElement('span');
+        empty.className = 'score-history-label';
+        empty.textContent = '—';
+        scoreHistory.appendChild(empty);
+        return;
+      }
+      if(challenge.scores.length > 8){
+        var more = document.createElement('span');
+        more.className = 'score-history-label';
+        more.textContent = '…';
+        scoreHistory.appendChild(more);
+      }
+      challenge.scores.slice(-8).forEach(function(runScore){
+        var chip = document.createElement('span');
+        chip.className = 'score-history-score' + (runScore > 15 ? ' reached' : '');
+        chip.textContent = runScore;
+        scoreHistory.appendChild(chip);
+      });
+    }
+
+    function recordCompletedRun(){
+      if(challenge15Attempt > 0){
+        profile.challenge15.scores[challenge15Attempt-1] = score;
+      }
+      saveProfile();
+    }
+
     function clearObstacles(){
       obstacles.forEach(function(obstacle){ obstacle.el.remove(); });
       obstacles = [];
@@ -2103,9 +2179,18 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     }
 
     function startGame(){
+      if((gameState === 'running' || gameState === 'paused') && challenge15Attempt > 0){
+        recordCompletedRun();
+      }
       resetGame();
       runStartBest = bestScore;
       profile.runs += 1;
+      challenge15Attempt = 0;
+      if(profile.challenge15.completedIn === null){
+        profile.challenge15.attempts += 1;
+        challenge15Attempt = profile.challenge15.attempts;
+        profile.challenge15.scores[challenge15Attempt-1] = 0;
+      }
       if(profile.runs >= 5) completeMission('runs5');
       saveProfile();
       gameState = 'running';
@@ -2145,6 +2230,8 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
       cancelAnimationFrame(animationId);
       var isNewBest = score > runStartBest;
       updateBest();
+      recordCompletedRun();
+      renderScoreJourney();
       if(won){
         winScoreEl.textContent = score;
         winBestScoreEl.textContent = bestScore;
@@ -2201,6 +2288,21 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
           obstacle.passed = true;
           score += 1;
           scoreEl.textContent = score;
+          if(challenge15Attempt > 0){
+            profile.challenge15.scores[challenge15Attempt-1] = score;
+            saveProfile();
+          }
+          if(score > 15 && challenge15Attempt > 0 && profile.challenge15.completedIn === null){
+            profile.challenge15.completedIn = challenge15Attempt;
+            profile.challenge15.scores[challenge15Attempt-1] = score;
+            saveProfile();
+            milestoneToast.textContent = lang() === 'en'
+              ? 'Passed 15 after ' + challenge15Attempt + ' attempt(s)! ✦'
+              : 'Vượt 15 sau ' + challenge15Attempt + ' lượt! ✦';
+            milestoneToast.classList.remove('show'); void milestoneToast.offsetWidth; milestoneToast.classList.add('show');
+            particleBurst(true);
+            [523,659,784].forEach(function(note,index){ playTone(note,.24,index*.08); });
+          }
           var isNewPersonalBest = score > bestScore;
           if(isNewPersonalBest){ bestScore = score; profile.best = score; saveProfile(); }
           if(score >= 5) completeMission('streak5');
@@ -2282,9 +2384,10 @@ html[data-theme="dark"] .vo-game-shell{background:var(--surface);}
     winBestScoreEl.textContent = bestScore;
     applySkin(profile.selectedSkin);
     renderProgressUI();
+    renderScoreJourney();
     updateStage(false);
     langToggle.addEventListener('click',function(){
-      setTimeout(function(){ updateStage(false); renderProgressUI(); if(gameState === 'over') renderNextUnlock(); },0);
+      setTimeout(function(){ updateStage(false); renderProgressUI(); renderScoreJourney(); if(gameState === 'over') renderNextUnlock(); },0);
     });
   }
 

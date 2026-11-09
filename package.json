@@ -1,0 +1,8 @@
+{
+  "name": "vo-paper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vỏ Paper website and private demo analytics",
+  "scripts": { "start": "node server.js", "test": "node --test" },
+  "engines": { "node": ">=22" }
+}

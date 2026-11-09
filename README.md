@@ -11,6 +11,7 @@ npm start
 - Website: http://localhost:3000
 - Đăng nhập: http://localhost:3000/admin/login
 - Dashboard: http://localhost:3000/admin (hoặc `/dashboard`)
+- Trên website: cuộn xuống cuối trang → cột **Kết nối** → **Quản trị · Dashboard**. Người chưa đăng nhập được chuyển đến trang đăng nhập.
 - Tài khoản demo: **admin** / **VoPaper@2026**
 - Kiểm tra: `npm test`
 - Đổi cổng bằng biến môi trường `PORT`.
@@ -48,4 +49,4 @@ Chạy bằng server Node này để có đầy đủ Analytics. Mở trực ti�
 
 Tài khoản hardcode chỉ nằm trong server, không đưa vào JavaScript trình duyệt. Cookie ngẫu nhiên HttpOnly, SameSite=Strict; Secure khi dùng HTTPS, hết hạn sau 8 giờ. Truy cập Dashboard chưa đăng nhập bị chuyển tới login, API thống kê/SSE trả 401. Đăng xuất vô hiệu hóa session và đóng stream liên quan. API ghi nhận vẫn công khai để người ghé website có thể gửi sự kiện; có giới hạn tốc độ, kích thước payload, kiểm tra dữ liệu và nguồn yêu cầu. Không lưu địa chỉ IP trong lịch sử.
 
-**Chỉ dùng demo, không phù hợp bảo vệ dữ liệu production.** Trước khi dùng thật cần thay tài khoản hardcode bằng hệ thống xác thực phù hợp, HTTPS, kho dữ liệu/session dùng chung, chính sách lưu trữ dữ liệu và xử lý lưu lượng lớn. Các trang admin không có liên kết trên website công khai và có `noindex`; bảo vệ truy cập được thực hiện bằng session phía server.
+**Chỉ dùng demo, không phù hợp bảo vệ dữ liệu production.** Trước khi dùng thật cần thay tài khoản hardcode bằng hệ thống xác thực phù hợp, HTTPS, kho dữ liệu/session dùng chung, chính sách lưu trữ dữ liệu và xử lý lưu lượng lớn. Website có liên kết quản trị ở cuối trang; các trang admin có `noindex`, bảo vệ truy cập được thực hiện bằng session phía server.

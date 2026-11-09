@@ -2,7 +2,7 @@
   const $ = id => document.getElementById(id);
   const fmt = n => new Intl.NumberFormat('vi-VN').format(n);
   async function request(url, options) {
-    const res = await fetch(url, options);
+    const res = await fetch(url, { signal: AbortSignal.timeout(15000), ...options });
     if (res.status === 401 && !$('login')) { location.replace('/admin/login'); throw new Error('Phiên đăng nhập đã hết hạn.'); }
     const data = await res.json(); if (!res.ok) throw new Error(data.error || 'Không thể tải dữ liệu.'); return data;
   }
@@ -11,6 +11,7 @@
     $('login').onsubmit = async e => { e.preventDefault(); const button = e.target.querySelector('[type=submit]'); button.disabled = true; $('error').textContent = ''; try { await request('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: $('username').value, password: $('password').value }) }); location.replace('/admin'); } catch (err) { $('error').textContent = err.message; } finally { button.disabled = false; } }; return;
   }
   let source = 'real', generation = 0, pending = false, queued = false;
+  let transport = 'polling', stream, pollTimer, refreshTimer;
   const dayKey = time => new Date(time + 7 * 3600000).toISOString().slice(0, 10);
   function range() {
     const today = dayKey(Date.now());
@@ -64,7 +65,8 @@
       $('recent').replaceChildren();
       if (!data.recent.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'Chưa có lượt xem.'; $('recent').append(p); }
       for (const row of data.recent) { const item = document.createElement('div'); item.className = 'recent-row'; const name = document.createElement('span'); name.textContent = row.path; name.title = row.path; const time = document.createElement('small'); time.textContent = new Date(row.timestamp).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit' }); item.append(name, time); $('recent').append(item); }
-    } catch (err) { $('error').textContent = err.message; } finally { pending = false; $('refresh').disabled = false; if (queued) { queued = false; load(); } }
+      if (transport === 'polling') $('connection').textContent = '● Tự động cập nhật mỗi 5 giây · ' + new Date(data.updatedAt).toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    } catch (err) { $('error').textContent = err.message; $('connection').textContent = 'Mất kết nối · Đang thử lại…'; } finally { pending = false; $('refresh').disabled = false; if (queued) { queued = false; load(); } }
   }
   document.querySelectorAll('[data-source]').forEach(button => button.onclick = () => { source = button.dataset.source; generation++; document.querySelectorAll('[data-source]').forEach(b => { b.classList.toggle('selected', b === button); b.setAttribute('aria-pressed', String(b === button)); }); load(); });
   $('period').onchange = () => { $('custom-range').hidden = $('period').value !== 'custom'; if ($('period').value !== 'custom') { generation++; load(); } };
@@ -72,10 +74,19 @@
   $('group').onchange = () => { generation++; load(); };
   $('refresh').onclick = load;
   $('logout').onclick = async () => { try { await request('/api/logout', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' }); location.replace('/admin/login'); } catch (err) { $('error').textContent = err.message; } };
-  const stream = new EventSource('/api/stream');
-  stream.onopen = () => { $('connection').textContent = '● Đã kết nối cập nhật trực tiếp'; };
-  let refreshTimer;
-  stream.onmessage = event => { const update = JSON.parse(event.data); $('online').textContent = $('online-card').textContent = fmt(update.online); clearTimeout(refreshTimer); refreshTimer = setTimeout(load, 300); };
-  stream.onerror = () => { $('connection').textContent = 'Đang kết nối lại…'; request('/api/session').catch(() => {}); };
-  addEventListener('pagehide', () => stream.close()); load();
+  async function connect() {
+    try { transport = (await request('/api/config')).transport; } catch { transport = 'polling'; }
+    if (transport === 'sse' && 'EventSource' in window) {
+      stream = new EventSource('/api/stream');
+      stream.onopen = () => { $('connection').textContent = '● Đã kết nối cập nhật trực tiếp'; };
+      stream.onmessage = event => { const update = JSON.parse(event.data); $('online').textContent = $('online-card').textContent = fmt(update.online); clearTimeout(refreshTimer); refreshTimer = setTimeout(load, 300); };
+      stream.onerror = () => { $('connection').textContent = 'Đang kết nối lại…'; request('/api/session').catch(() => {}); };
+    } else {
+      transport = 'polling'; pollTimer = setInterval(() => { if (!document.hidden) load(); }, 5000);
+    }
+    load();
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+  addEventListener('pagehide', () => { stream?.close(); clearInterval(pollTimer); clearTimeout(refreshTimer); });
+  connect();
 })();
